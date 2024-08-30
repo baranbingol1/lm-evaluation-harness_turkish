@@ -1,4 +1,4 @@
-tag: basque-glue
+group: basque-glue
 task: qnlieu
 dataset_path: orai-nlp/basqueGLUE
 dataset_name: qnli

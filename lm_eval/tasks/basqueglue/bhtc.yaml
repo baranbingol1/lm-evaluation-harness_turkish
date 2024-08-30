@@ -1,4 +1,4 @@
-tag: basque-glue
+group: basque-glue
 task: bhtc_v2
 dataset_path: orai-nlp/basqueGLUE
 dataset_name: bhtc

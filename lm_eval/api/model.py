@@ -55,7 +55,7 @@ class LM(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def loglikelihood_rolling(self, requests) -> List[float]:
+    def loglikelihood_rolling(self, requests) -> List[Tuple[float]]:
         """Compute full log-likelihood of a string, with no truncation, for perplexity computation
         - We will use the full max context length of the model.
         - For inputs that exceed the max context length, we divide the tokenized string into chunks of up to
@@ -101,13 +101,14 @@ class LM(abc.ABC):
         """Generate greedily until a stopping sequence
 
         :param requests: list[Instance]
-            A list of Instance objects with property `args` which returns a tuple (context, gen_kwargs).
+            A list of Instance objects with property `args` which returns a tuple (context, until).
             context: str
                 Context string
-            gen_kwargs: dict
-                A dictionary of keyword arguments to pass to the generation function e.g. top_k, until, etc.
+            until: [str]
+                The string sequences to generate until. These string sequences
+                may each span across multiple tokens, or may be part of one token.
         :return: list[str]
-            A list of model generated continuations.
+            A list of strings continuation
             continuation: str
                 The generated continuation.
         """
@@ -245,10 +246,9 @@ class CachingLM:
         # add hook to lm
         lm.set_cache_hook(self.get_cache_hook())
 
-    def __getattr__(self, attr: str):
+    def __getattr__(self, attr):
         lm_attr = getattr(self.lm, attr)
-        if attr not in ["loglikelihood", "loglikelihood_rolling", "generate_until"]:
-            eval_logger.debug(f"Passing through attribute '{attr}' to underlying LM")
+        if not callable(lm_attr):
             return lm_attr
 
         def fn(requests):
@@ -283,11 +283,8 @@ class CachingLM:
             eval_logger.info(
                 f"Cached requests: {len(requests) - len(remaining_reqs)}, Requests remaining: {len(remaining_reqs)}"
             )
-            if remaining_reqs:
-                # actually run the LM on the requests that do not have cached results
-                rem_res = getattr(self.lm, attr)(remaining_reqs)
-            else:
-                rem_res = []
+            # actually run the LM on the requests that do not have cached results
+            rem_res = getattr(self.lm, attr)(remaining_reqs)
 
             # stick the new ones back into the list and also cache any of the new ones
             resptr = 0
@@ -327,19 +324,14 @@ class TemplateLM(LM):
         return self.eot_token_id
 
     @abc.abstractmethod
-    def tok_encode(self, string: str, **kwargs) -> List[int]:
-        """
-        Tokenize a string using the model's tokenizer and return a list of token IDs.
-        """
+    def tok_encode(self, string: str, **kwargs):
         pass
 
     @abc.abstractmethod
-    def _loglikelihood_tokens(self, requests, **kwargs) -> List[Tuple[float, bool]]:
+    def _loglikelihood_tokens(self, requests, **kwargs):
         pass
 
-    def _encode_pair(
-        self, context: str, continuation: str
-    ) -> Tuple[List[int], List[int]]:
+    def _encode_pair(self, context, continuation):
         n_spaces = len(context) - len(context.rstrip())
         if n_spaces > 0:
             continuation = context[-n_spaces:] + continuation
@@ -380,7 +372,7 @@ class TemplateLM(LM):
     @abc.abstractmethod
     def loglikelihood_rolling(
         self, requests, disable_tqdm: bool = False
-    ) -> List[float]:
+    ) -> List[Tuple[float, bool]]:
         pass
 
     @abc.abstractmethod

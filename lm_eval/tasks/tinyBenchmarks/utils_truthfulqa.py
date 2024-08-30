@@ -6,8 +6,6 @@ from rouge_score import rouge_scorer, scoring
 
 """ This code mirrors the utils of the original truthful_qa task """
 
-ROUGE_SCORER = None
-
 
 def process_results_mc2(doc, results):
     lls, is_greedy = zip(*results)
@@ -155,11 +153,7 @@ def rouge(refs, preds):
         A `list` of predicted `strs`.
     """
     rouge_types = ["rouge1", "rouge2", "rougeLsum"]
-    global ROUGE_SCORER
-    if ROUGE_SCORER is None:
-        # init RougeScorer once (https://github.com/EleutherAI/lm-evaluation-harness/issues/1692)--rouge_types are constant
-        ROUGE_SCORER = rouge_scorer.RougeScorer(rouge_types)
-    scorer = ROUGE_SCORER
+    scorer = rouge_scorer.RougeScorer(rouge_types)
     # Add newlines between sentences to correctly compute `rougeLsum`.
 
     def _prepare_summary(summary):

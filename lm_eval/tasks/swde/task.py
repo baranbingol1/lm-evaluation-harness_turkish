@@ -12,7 +12,7 @@ class SWDE(ConfigurableTask):
     DATASET_PATH = "hazyresearch/based-swde-v2"
     DATASET_NAME = "default"
 
-    def __init__(self, **kwargs):
+    def __init__(self):
         super().__init__(config={"metadata": {"version": self.VERSION}})
 
     def has_training_docs(self):

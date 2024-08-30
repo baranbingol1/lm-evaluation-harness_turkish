@@ -1,5 +1,3 @@
-from functools import partial
-
 import datasets
 
 
@@ -17,38 +15,9 @@ class ContextSampler:
         self.target_delimiter = self.config.target_delimiter
         self.fewshot_delimiter = self.config.fewshot_delimiter
 
-        if (
-            self.config.fewshot_config is not None
-            and self.config.fewshot_config.get("doc_to_text", None) is not None
-        ):
-            self.doc_to_text = partial(
-                self.task.doc_to_text,
-                doc_to_text=self.config.fewshot_config.get("doc_to_text", None),
-            )
-        else:
-            self.doc_to_text = self.task.doc_to_text
-
-        if (
-            self.config.fewshot_config is not None
-            and self.config.fewshot_config.get("doc_to_target", None) is not None
-        ):
-            self.doc_to_target = partial(
-                self.task.doc_to_target,
-                doc_to_target=self.config.fewshot_config.get("doc_to_target", None),
-            )
-        else:
-            self.doc_to_target = self.task.doc_to_target
-
-        if (
-            self.config.fewshot_config is not None
-            and self.config.fewshot_config.get("doc_to_choice", None) is not None
-        ):
-            self.doc_to_choice = partial(
-                self.task.doc_to_choice,
-                doc_to_choice=self.config.fewshot_config.get("doc_to_choice", None),
-            )
-        else:
-            self.doc_to_choice = self.task.doc_to_choice
+        self.doc_to_text = self.task.doc_to_text
+        self.doc_to_target = self.task.doc_to_target
+        self.doc_to_choice = self.task.doc_to_choice
 
         self.docs = docs  # HF dataset split, provided by task._fewshot_docs()
         if fewshot_indices:  # subset few-shot docs from
@@ -82,17 +51,15 @@ class ContextSampler:
                 if self.config.doc_to_choice is None or isinstance(doc_content, str)
                 else self.doc_to_choice(doc)[doc_content]
             )
-
-            if doc_target != "":
-                labeled_examples += self.target_delimiter
-                labeled_examples += (
-                    str(doc_target[0])
-                    if isinstance(doc_target, list)
-                    else doc_target
-                    if self.config.doc_to_choice is None or isinstance(doc_target, str)
-                    else str(self.doc_to_choice(doc)[doc_target])
-                )
-                labeled_examples += self.fewshot_delimiter
+            labeled_examples += self.target_delimiter
+            labeled_examples += (
+                str(doc_target[0])
+                if isinstance(doc_target, list)
+                else doc_target
+                if self.config.doc_to_choice is None or isinstance(doc_target, str)
+                else str(self.doc_to_choice(doc)[doc_target])
+            )
+            labeled_examples += self.fewshot_delimiter
 
         return labeled_examples
 

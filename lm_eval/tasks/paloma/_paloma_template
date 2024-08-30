@@ -1,4 +1,4 @@
-tag:
+group:
   - paloma
 dataset_path: allenai/paloma
 output_type: loglikelihood_rolling
