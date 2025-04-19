@@ -20,8 +20,8 @@ metric_list:
       - "\\.$"
 generation_kwargs:
   until:
-    - '<|eot_id|>'
-    - '<|start_header_id|>user<|end_header_id|>'
+    - "<|eot_id|>"
+    - "<|start_header_id|>user<|end_header_id|>"
     - "Soru:"
     - "</s>"
     - "<|im_end|>"
