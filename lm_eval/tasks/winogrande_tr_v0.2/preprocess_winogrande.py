@@ -4,7 +4,6 @@ def doc_to_text(doc):
 
 
 def doc_to_target(doc):
-    print(doc)
     idx = doc["sentence"].index("_") + 1
     return doc["sentence"][idx:].strip()
 
