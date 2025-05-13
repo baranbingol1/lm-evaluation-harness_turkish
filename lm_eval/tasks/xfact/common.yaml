@@ -1,0 +1,18 @@
+task: xfact
+dataset_path: mcemilg/x-fact
+output_type: multiple_choice
+training_split: train
+validation_split: validation
+test_split: test
+should_decontaminate: true
+doc_to_decontamination_query: "{{claim}}"
+doc_to_target: !function utils.doc_to_target
+metric_list:
+  - metric: acc
+    aggregation: mean
+    higher_is_better: true
+  - metric: acc_norm
+    aggregation: mean
+    higher_is_better: true
+metadata:
+  version: 0.0

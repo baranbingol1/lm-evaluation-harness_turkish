@@ -1,0 +1,6 @@
+include: turkish_plu_common_yaml
+task: turkish_plu_step_ordering
+dataset_path: mcemilg/turkish-plu-step-ordering
+doc_to_text: "Hedef: {{sent2}}"
+doc_to_target: label
+doc_to_choice: "{{['Önce: ' + ending0 + ' Sonra: ' + ending1, 'Önce: ' + ending1 + ' Sonra: ' + ending0]}}"

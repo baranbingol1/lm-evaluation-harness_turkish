@@ -1,0 +1,6 @@
+include: turkish_plu_common_yaml
+task: turkish_plu_goal_inference
+dataset_path: mcemilg/turkish-plu-goal-inference
+doc_to_text: "Örnek Adım: {{sent2}} Hedef:"
+doc_to_target: label
+doc_to_choice: "{{[ending0, ending1, ending2, ending3]}}"

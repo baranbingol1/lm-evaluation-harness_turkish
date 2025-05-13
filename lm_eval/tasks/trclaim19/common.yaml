@@ -1,0 +1,14 @@
+group: trclaim19
+dataset_path: mcemilg/TrClaim19
+output_type: multiple_choice
+test_split: train
+should_decontaminate: true
+metric_list:
+  - metric: acc
+    aggregation: mean
+    higher_is_better: true
+  - metric: acc_norm
+    aggregation: mean
+    higher_is_better: true
+metadata:
+  version: 0.0

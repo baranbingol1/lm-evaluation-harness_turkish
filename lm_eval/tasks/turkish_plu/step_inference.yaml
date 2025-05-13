@@ -1,0 +1,6 @@
+include: turkish_plu_common_yaml
+task: turkish_plu_step_inference
+dataset_path: mcemilg/turkish-plu-step-inference
+doc_to_text: "Hedef: {{sent2}} Örnek Adım:"
+doc_to_target: label
+doc_to_choice: "{{[ending0, ending1, ending2, ending3]}}"
